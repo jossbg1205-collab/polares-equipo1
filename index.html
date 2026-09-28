@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Coordenadas polares: guía interactiva</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Newsreader:opsz,wght@6..72,400;6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef2f6;--ink:#14213d;--mut:#5b6b82;--pan:#fff;--ln:#cbd5e1;--a:#d6336c;--a2:#1c7ed6;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1724;--ink:#e6edf7;--mut:#93a4bd;--pan:#17233a;--ln:#2c3d5b;--a:#ff6b9a;--a2:#74b0ff}}
+:root[data-theme="dark"]{--bg:#0f1724;--ink:#e6edf7;--mut:#93a4bd;--pan:#17233a;--ln:#2c3d5b;--a:#ff6b9a;--a2:#74b0ff}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 56px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.6 Newsreader,Georgia,serif}
+h1,h2,h3,nav,button,label,.k{font-family:'Bricolage Grotesque',system-ui,sans-serif}
+nav{position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);border-bottom:1px solid var(--ln);display:flex;gap:4px;overflow-x:auto;padding:8px 12px;z-index:5}
+nav a{color:var(--mut);text-decoration:none;padding:6px 12px;border-radius:6px;white-space:nowrap;font-size:15px}
+nav a:hover{color:var(--ink);background:var(--pan)}
+main{max-width:900px;margin:0 auto;padding:0 18px 60px}
+header{padding:48px 0 12px}
+h1{font-size:clamp(34px,7vw,60px);line-height:1.05;margin:0 0 14px;letter-spacing:-.02em}
+h1 i{font-style:normal;color:var(--a)}
+h2{font-size:clamp(24px,4vw,32px);margin:56px 0 10px;letter-spacing:-.01em}
+h3{font-size:18px;margin:22px 0 6px}
+p{margin:0 0 12px;max-width:68ch}.mut{color:var(--mut)}
+.box{background:var(--pan);border:1px solid var(--ln);border-radius:10px;padding:16px;display:grid;grid-template-columns:minmax(0,440px) 1fr;gap:20px;align-items:start;margin:16px 0}
+@media(max-width:720px){.box{grid-template-columns:1fr}}
+canvas{width:100%;max-width:440px;aspect-ratio:1;display:block;margin:auto}
+.ctl{display:grid;gap:10px}
+label{display:grid;grid-template-columns:1fr auto;font-size:15px;gap:2px 8px}
+label input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--a)}
+label b{color:var(--a);font-weight:700}
+button{font:inherit;font-size:15px;padding:7px 12px;border:1px solid var(--ln);background:var(--bg);color:var(--ink);border-radius:6px;cursor:pointer}
+button:hover{border-color:var(--a)}button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--a2);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:8px}
+.out{background:var(--bg);border-left:3px solid var(--a);padding:10px 14px;font-size:16px;border-radius:0 6px 6px 0}
+.f{font-family:Newsreader,Georgia,serif;font-style:italic;font-size:20px;background:var(--pan);border:1px solid var(--ln);border-radius:8px;padding:10px 16px;margin:10px 0;overflow-x:auto;white-space:nowrap}
+.steps{counter-reset:s;list-style:none;padding:0;margin:8px 0}
+.steps li{counter-increment:s;padding-left:34px;position:relative;margin-bottom:10px;max-width:68ch}
+.steps li:before{content:counter(s);position:absolute;left:0;top:2px;width:24px;height:24px;border-radius:50%;background:var(--a2);color:var(--bg);font:700 13px/24px 'Bricolage Grotesque',sans-serif;text-align:center}
+input[type=number]{width:88px;font:inherit;font-size:16px;padding:5px 8px;border:1px solid var(--ln);border-radius:6px;background:var(--bg);color:var(--ink)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:720px){.two{grid-template-columns:1fr}}
+.card{background:var(--pan);border:1px solid var(--ln);border-radius:10px;padding:16px}
+table{border-collapse:collapse;width:100%;font-size:16px}td,th{border-bottom:1px solid var(--ln);padding:6px 8px;text-align:right}th{color:var(--mut);font-weight:500}
+.ok{color:#2b9348}.no{color:var(--a)}
+</style></head><body>
+<nav aria-label="Secciones"><a href="#s1">1 · Fundamentos</a><a href="#s2">2 · Conversión</a><a href="#s3">3 · Laboratorio de curvas</a><a href="#s4">4 · Límites</a></nav>
+<main>
+<header><h1>Coordenadas <i>polares</i></h1>
+<p class="mut">Ubicar un punto con una distancia y un ángulo en lugar de dos desplazamientos. Mueve los controles: cada sección responde en vivo.</p></header>
+
+<section id="s1"><h2>1. Fundamentos del sistema polar</h2>
+<p>El sistema tiene un origen llamado <b>polo</b> (O) y una semirrecta horizontal hacia la derecha, el <b>eje polar</b>. Un punto P se describe con el par ordenado <b>(r, θ)</b>: <b>r</b> es la distancia dirigida desde el polo y <b>θ</b> es el ángulo medido desde el eje polar, positivo en sentido antihorario.</p>
+<div class="box"><canvas id="c1" aria-label="Plano polar con el punto P"></canvas>
+<div class="ctl">
+<label>Radio r <b id="v-r1"></b><input id="r1" type="range" min="-5" max="5" step="0.5" value="3"></label>
+<label>Ángulo θ <b id="v-t1"></b><input id="t1" type="range" min="-360" max="360" step="15" value="60"></label>
+<div class="row" id="pre1"><button data-r="3" data-t="60">r &gt; 0, θ &gt; 0</button><button data-r="-3" data-t="60">r &lt; 0</button><button data-r="3" data-t="-60">θ &lt; 0</button><button data-r="-3" data-t="-60">ambos negativos</button></div>
+<div class="out" id="o1"></div></div></div>
+<h3>Cómo graficar cuando hay signos negativos</h3>
+<ol class="steps">
+<li><b>Gira primero.</b> Parte del eje polar y gira θ: antihorario si θ &gt; 0, <b>horario si θ &lt; 0</b>. Así queda fijada una semirrecta.</li>
+<li><b>Avanza |r| unidades</b> sobre esa semirrecta si r &gt; 0.</li>
+<li>Si <b>r &lt; 0</b>, avanza |r| unidades sobre la semirrecta <b>opuesta</b> (la que forma θ + 180°). Por eso (−3, 60°) y (3, 240°) son el mismo punto.</li>
+<li>Un punto tiene infinitas descripciones: (r, θ) = (r, θ + 360°k) = (−r, θ + 180° + 360°k).</li></ol></section>
+
+<section id="s2"><h2>2. El puente Cartesiano ↔ Polar</h2>
+<p>Superpón los dos sistemas: el polo sobre el origen y el eje polar sobre el eje x positivo. Un punto P con distancia r al origen forma un triángulo rectángulo de hipotenusa r, cateto horizontal x y cateto vertical y.</p>
+<ol class="steps">
+<li>Del coseno: cos θ = x / r, así que <b>x = r cos θ</b>.</li>
+<li>Del seno: sen θ = y / r, así que <b>y = r sen θ</b>.</li>
+<li>Eleva al cuadrado y suma: x² + y² = r²cos²θ + r²sen²θ = r²(cos²θ + sen²θ) = r². Entonces <b>r² = x² + y²</b>.</li>
+<li>Divide la segunda ecuación entre la primera: y / x = sen θ / cos θ, es decir <b>tan θ = y / x</b> (con x ≠ 0).</li></ol>
+<div class="f">x = r cos θ &nbsp;&nbsp; y = r sen θ &nbsp;&nbsp; r² = x² + y² &nbsp;&nbsp; tan θ = y/x</div>
+<p class="mut">Cuidado: arctan(y/x) solo devuelve ángulos entre −90° y 90°. Debes revisar el cuadrante de (x, y) y sumar 180° si está a la izquierda del eje y.</p>
+<div class="two">
+<div class="card"><h3 style="margin-top:0">Punto: cartesiano → polar</h3>
+<div class="row"><label style="display:block">x <input id="px" type="number" value="-1" step="0.5"></label><label style="display:block">y <input id="py" type="number" value="1" step="0.5"></label></div>
+<div class="out" id="o2a" style="margin-top:10px"></div></div>
+<div class="card"><h3 style="margin-top:0">Punto: polar → cartesiano</h3>
+<div class="row"><label style="display:block">r <input id="pr" type="number" value="2" step="0.5"></label><label style="display:block">θ (°) <input id="pt" type="number" value="210" step="15"></label></div>
+<div class="out" id="o2b" style="margin-top:10px"></div></div></div>
+<h3>Convertir ecuaciones</h3>
+<div class="two">
+<div class="card"><b>x² + y² = 4x</b> → polar
+<ol class="steps" style="margin-top:10px"><li>Sustituye x² + y² = r² y x = r cos θ: r² = 4r cos θ.</li><li>Divide entre r (el polo sigue incluido, pues r = 0 aparece cuando θ = 90°).</li><li><b>r = 4 cos θ</b>: una circunferencia de radio 2 centrada en (2, 0).</li></ol></div>
+<div class="card"><b>r = 2 sen θ</b> → cartesiano
+<ol class="steps" style="margin-top:10px"><li>Multiplica por r para formar términos conocidos: r² = 2r sen θ.</li><li>Sustituye: x² + y² = 2y.</li><li>Completa cuadrados: <b>x² + (y − 1)² = 1</b>, circunferencia de radio 1 centrada en (0, 1).</li></ol></div></div></section>
+
+<section id="s3"><h2>3. Laboratorio de curvas polares</h2>
+<p>Elige una familia y mueve los parámetros. La curva se reescala para caber en pantalla, así que fíjate en la forma, y en los anillos del fondo para ver el tamaño real.</p>
+<div class="row" id="fam"></div>
+<div class="box"><canvas id="c3" aria-label="Curva polar"></canvas>
+<div class="ctl"><div class="f" id="eq3" style="margin:0"></div>
+<label data-u="a">Parámetro a <b id="v-a"></b><input id="a" type="range" min="0.5" max="5" step="0.1" value="3"></label>
+<label data-u="b">Parámetro b <b id="v-b"></b><input id="b" type="range" min="-3" max="3" step="0.1" value="1"></label>
+<label data-u="n">Parámetro n <b id="v-n"></b><input id="n" type="range" min="1" max="8" step="1" value="3"></label>
+<div class="out" id="o3"></div></div></div></section>
+
+<section id="s4"><h2>4. Aplicación: límites en dos variables</h2>
+<p>Al acercarse a (0, 0) por caminos distintos, un límite puede dar resultados diferentes. En polares, acercarse al origen es simplemente <b>r → 0</b>, y el ángulo θ describe el camino. Se sustituye x = r cos θ, y = r sen θ; si el resultado tiende al mismo valor <b>sin importar θ</b>, el límite existe.</p>
+<div class="row" id="lim"><button data-k="1" class="on">f = x²y / (x² + y²)</button><button data-k="2">g = xy / (x² + y²)</button></div>
+<div class="box" style="grid-template-columns:1fr 1fr">
+<div><div id="sol4"></div></div>
+<div class="ctl"><label>Camino θ <b id="v-t4"></b><input id="t4" type="range" min="0" max="360" step="5" value="45"></label>
+<table><thead><tr><th>r</th><th id="th4">f(r cos θ, r sen θ)</th></tr></thead><tbody id="tb4"></tbody></table>
+<div class="out" id="o4"></div></div></div></section>
+</main>
+<script>
+const $=id=>document.getElementById(id),css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim(),S=440,D=Math.PI/180;
+function ctx(c){const d=devicePixelRatio||1;c.width=c.height=S*d;const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);return x}
+const fmt=v=>{const r=Math.round(v*1000)/1000;return String(r).replace('-','−')};
+function grid(x,maxR,step){const cx=S/2,R=S/2-26,sc=R/maxR;x.lineWidth=1;x.strokeStyle=css('--ln');x.fillStyle=css('--mut');x.font='12px sans-serif';x.textAlign='center';x.textBaseline='middle';
+for(let k=step;k<=maxR+1e-9;k+=step){x.beginPath();x.arc(cx,cx,k*sc,0,7);x.stroke()}
+for(let d=0;d<360;d+=30){const a=d*D;x.beginPath();x.moveTo(cx,cx);x.lineTo(cx+R*Math.cos(a),cx-R*Math.sin(a));x.stroke();x.fillText(d+'°',cx+(R+15)*Math.cos(a),cx-(R+15)*Math.sin(a))}
+x.strokeStyle=css('--ink');x.lineWidth=2;x.beginPath();x.moveTo(cx,cx);x.lineTo(cx+R,cx);x.stroke();x.fillStyle=css('--ink');x.beginPath();x.arc(cx,cx,3.5,0,7);x.fill();return sc}
+/* Sección 1 */
+const c1=ctx($('c1'));
+function s1(){const r=+$('r1').value,t=+$('t1').value,a=t*D,x=c1;$('v-r1').textContent=fmt(r);$('v-t1').textContent=t+'°';
+x.clearRect(0,0,S,S);const sc=grid(x,5,1),c=S/2;
+x.strokeStyle=css('--a2');x.setLineDash([5,4]);x.lineWidth=1.5;x.beginPath();x.moveTo(c-5*sc*Math.cos(a),c+5*sc*Math.sin(a));x.lineTo(c+5*sc*Math.cos(a),c-5*sc*Math.sin(a));x.stroke();x.setLineDash([]);
+if(t){x.lineWidth=2.5;x.beginPath();x.arc(c,c,.9*sc,0,-a,t>0);x.stroke()}
+const px=c+r*sc*Math.cos(a),py=c-r*sc*Math.sin(a);x.strokeStyle=css('--a');x.lineWidth=3;x.beginPath();x.moveTo(c,c);x.lineTo(px,py);x.stroke();
+x.fillStyle=css('--a');x.beginPath();x.arc(px,py,7,0,7);x.fill();x.font='700 15px sans-serif';x.fillText('P',px+(px>c?14:-14),py-12);
+const tn=((t%360)+360)%360;let m=[];if(t<0)m.push('θ < 0: el giro es <b>horario</b>.');if(r<0)m.push('r < 0: el punto está en la semirrecta <b>opuesta</b>.');
+const rr=Math.abs(r),tt=r<0?(tn+180)%360:tn;
+$('o1').innerHTML=`P = (${fmt(r)}, ${t}°)<br>${m.join(' ')}${m.length?'<br>':''}Equivale a (${fmt(rr)}, ${tt}°).<br>Cartesianas: x = ${fmt(r*Math.cos(a))}, y = ${fmt(r*Math.sin(a))}`}
+['r1','t1'].forEach(i=>$(i).oninput=s1);
+$('pre1').onclick=e=>{const b=e.target.closest('button');if(!b)return;$('r1').value=b.dataset.r;$('t1').value=b.dataset.t;s1()};
+/* Sección 2 */
+function s2(){const x=+$('px').value,y=+$('py').value,r=Math.hypot(x,y);let t=Math.atan2(y,x)/D;if(t<0)t+=360;
+$('o2a').innerHTML=r===0?'En el polo r = 0 y θ puede ser cualquier ángulo.':`r = √(${fmt(x)}² + ${fmt(y)}²) = ${fmt(r)}<br>θ = ${fmt(t)}° (${fmt(t*D)} rad), ${x<0?'cuadrante corregido: arctan(y/x) da '+fmt(Math.atan(y/x)/D)+'° y se suman 180°':'arctan(y/x) sirve directo'}`;
+const R=+$('pr').value,T=+$('pt').value*D;$('o2b').innerHTML=`x = ${fmt(R)}·cos ${$('pt').value}° = ${fmt(R*Math.cos(T))}<br>y = ${fmt(R)}·sen ${$('pt').value}° = ${fmt(R*Math.sin(T))}`}
+['px','py','pr','pt'].forEach(i=>$(i).oninput=s2);
+/* Sección 3 */
+const F={
+rosa:{n:'Rosa polar',u:'an',eq:'r = a·cos(nθ)',r:(t,p)=>p.a*Math.cos(p.n*t),T:2*Math.PI,d:p=>`a fija la longitud de los pétalos. n cambia su número: ${p.n%2?p.n:2*p.n} pétalos (n impar da n; n par da 2n).`},
+card:{n:'Cardioide / caracol',u:'ab',eq:'r = a + b·cos θ',r:(t,p)=>p.a+p.b*Math.cos(t),T:2*Math.PI,d:p=>{const a=Math.abs(p.a),b=Math.abs(p.b);return 'a controla el tamaño y b la asimetría. '+(Math.abs(a-b)<.06?'Con a = |b| es una <b>cardioide</b> con pico en el polo.':a<b?'Con a < |b| es un caracol con <b>lazo interior</b>.':a<2*b?'Con |b| < a < 2|b| el caracol tiene una <b>hendidura</b>.':'Con a ≥ 2|b| es un caracol convexo, casi circular.')+' Si b < 0 la curva se refleja.'}},
+esp:{n:'Espiral de Arquímedes',u:'abn',eq:'r = a + b·θ',r:(t,p)=>p.a+p.b*t,T:null,d:p=>'a es el radio inicial, b es cuánto se separa cada vuelta (2πb) y n es el número de vueltas dibujadas. Con b < 0 la espiral gira hacia adentro.'},
+lem:{n:'Lemniscata',u:'a',eq:'r² = a²·cos(2θ)',r:null,T:2*Math.PI,d:p=>'a solo escala la figura: los dos lazos se abren sobre el eje polar y existen únicamente donde cos 2θ ≥ 0.'}};
+let fam='rosa';const c3=ctx($('c3'));
+$('fam').innerHTML=Object.keys(F).map(k=>`<button data-k="${k}">${F[k].n}</button>`).join('');
+function pts(p){const f=F[fam],o=[],N=1600,T=fam==='esp'?2*Math.PI*p.n:f.T;
+for(let i=0;i<=N;i++){const t=T*i/N;let r;if(fam==='lem'){const c=Math.cos(2*t);r=c<0?null:p.a*Math.sqrt(c)}else r=f.r(t,p);o.push(r===null?null:[r,t])}return o}
+function s3(){const p={a:+$('a').value,b:+$('b').value,n:+$('n').value},f=F[fam];
+['a','b','n'].forEach(k=>{$('v-'+k).textContent=fmt(p[k]);document.querySelector(`[data-u=${k}]`).style.display=f.u.includes(k)?'':'none'});
+[...$('fam').children].forEach(b=>b.classList.toggle('on',b.dataset.k===fam));
+$('eq3').textContent=f.eq;const P=pts(p),x=c3;x.clearRect(0,0,S,S);
+let m=.5;P.forEach(q=>{if(q)m=Math.max(m,Math.abs(q[0]))});const st=m>12?5:m>6?2:m>3?1:.5,mR=Math.ceil(m/st)*st,sc=grid(x,mR,st);
+x.strokeStyle=css('--a');x.lineWidth=2.5;x.lineJoin='round';x.beginPath();let pen=false;
+P.forEach(q=>{if(!q){pen=false;return}const X=S/2+q[0]*sc*Math.cos(q[1]),Y=S/2-q[0]*sc*Math.sin(q[1]);pen?x.lineTo(X,Y):x.moveTo(X,Y);pen=true});x.stroke();
+if(fam==='lem'){x.beginPath();pen=false;P.forEach(q=>{if(!q){pen=false;return}const X=S/2-q[0]*sc*Math.cos(q[1]),Y=S/2+q[0]*sc*Math.sin(q[1]);pen?x.lineTo(X,Y):x.moveTo(X,Y);pen=true});x.stroke()}
+$('o3').innerHTML=f.d(p)+`<br><span class="mut">Anillos cada ${st} unidad${st>1?'es':''}.</span>`}
+$('fam').onclick=e=>{const b=e.target.closest('button');if(b){fam=b.dataset.k;s3()}};['a','b','n'].forEach(i=>$(i).oninput=s3);
+/* Sección 4 */
+let K=1;
+const LF={1:{n:'f(r cos θ, r sen θ)',f:(x,y)=>x*x*y/(x*x+y*y)},2:{n:'g(r cos θ, r sen θ)',f:(x,y)=>x*y/(x*x+y*y)}};
+const SOL={1:`<h3 style="margin-top:0">Calcular lím f cuando (x, y) → (0, 0)</h3><ol class="steps"><li>Sustituye: f = (r²cos²θ · r sen θ) / (r²cos²θ + r²sen²θ).</li><li>Simplifica el denominador con cos²θ + sen²θ = 1: f = r³cos²θ sen θ / r² = <b>r·cos²θ·sen θ</b>.</li><li>Acota: |cos²θ sen θ| ≤ 1, luego |f| ≤ r.</li><li>Cuando r → 0, r → 0 sin importar θ. Por compresión, <b class="ok">el límite existe y vale 0</b>.</li></ol><p class="mut">La indeterminación 0/0 desapareció: r es un factor común que se cancela.</p>`,
+2:`<h3 style="margin-top:0">Calcular lím g cuando (x, y) → (0, 0)</h3><ol class="steps"><li>Sustituye: g = (r cos θ · r sen θ) / r².</li><li>Cancela r²: g = <b>cos θ · sen θ</b> = ½ sen 2θ.</li><li>El resultado <b>no depende de r</b> pero sí de θ: por el eje x (θ = 0) da 0, por y = x (θ = 45°) da ½.</li><li>Dos caminos, dos valores: <b class="no">el límite no existe</b>.</li></ol><p class="mut">Mueve θ y compara con la tabla: el valor no se acerca a 0.</p>`};
+function s4(){const t=+$('t4').value,a=t*D;$('v-t4').textContent=t+'°';$('sol4').innerHTML=SOL[K];$('th4').textContent=LF[K].n;
+[...$('lim').children].forEach(b=>b.classList.toggle('on',+b.dataset.k===K));
+const v=[1,.1,.01,.001].map(r=>{const X=r*Math.cos(a),Y=r*Math.sin(a);return[r,LF[K].f(X,Y)]});
+$('tb4').innerHTML=v.map(q=>`<tr><td>${q[0]}</td><td>${(Math.round(q[1]*1e6)/1e6).toString().replace('-','−')}</td></tr>`).join('');
+$('o4').innerHTML=K===1?'Sea cual sea θ, los valores se hacen cada vez más pequeños: tienden a 0.':`Por el camino θ = ${t}° los valores se estabilizan en ${fmt(Math.cos(a)*Math.sin(a))}. Cambia θ y cambiará el resultado.`}
+$('lim').onclick=e=>{const b=e.target.closest('button');if(b){K=+b.dataset.k;s4()}};$('t4').oninput=s4;
+function all(){s1();s2();s3();s4()}all();
+matchMedia('(prefers-color-scheme:dark)').addEventListener('change',all);
+</script></body></html>
